@@ -11,7 +11,7 @@ import urllib
 import pandas_datareader as pdr
 from datetime import datetime
 
-TOKEN = "423546507:AAGIRusfcH1uIC9uXOI27o7Dgrmp7izLc-k"
+TOKEN = #Personal
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 
