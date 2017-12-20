@@ -8,9 +8,9 @@ from sklearn.ensemble import RandomForestClassifier
 import logging
 from gensim.models import word2vec
 
-train = pd.read_csv("C:/Users/Kenneth/Downloads/train.csv", header=0)
-test = pd.read_csv("C:/Users/Kenneth/Downloads/test.csv", header=0)
-unlabeled_train = pd.read_csv("C:/Users/Kenneth/Downloads/unlabeltrain.csv", header=0)
+train = pd.read_csv("../train.csv", header=0)
+test = pd.read_csv("../test.csv", header=0)
+unlabeled_train = pd.read_csv("../unlabeltrain.csv", header=0)
 
 def review_to_wordlist(review, remove_stopwords=False):
     review_text = BeautifulSoup(review).get_text()
@@ -109,7 +109,7 @@ output = pd.DataFrame( data={"id":test["id"], "sentiment":result} )
 output.to_csv( "Word2Vec_AverageVectors.csv", index=False, quoting=3)
 
 
-#--------------##Clustering##----------------------------#
+#--------------Clustering----------------------------#
 
 from sklearn.cluster import KMeans
 import time
@@ -119,10 +119,8 @@ start = time.time()
 word_vectors = model.syn0
 num_clusters = word_vectors.shape[0] / 5
 
-
 kmeans_clustering = KMeans( n_clusters = num_clusters )
 idx = kmeans_clustering.fit_predict( word_vectors )
-
 
 end = time.time()
 elapsed = end - start
