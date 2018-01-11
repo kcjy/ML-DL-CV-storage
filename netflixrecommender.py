@@ -18,25 +18,7 @@ print('Dataset 1 shape: {}'.format(df1.shape))
 print('-Dataset examples-')
 print(df1.iloc[::5000000, :])
 
-#df2 = pd.read_csv('../input/combined_data_2.txt', header = None, names = ['Cust_Id', 'Rating'], usecols = [0,1])
-#df3 = pd.read_csv('../input/combined_data_3.txt', header = None, names = ['Cust_Id', 'Rating'], usecols = [0,1])
-#df4 = pd.read_csv('../input/combined_data_4.txt', header = None, names = ['Cust_Id', 'Rating'], usecols = [0,1])
-
-
-#df2['Rating'] = df2['Rating'].astype(float)
-#df3['Rating'] = df3['Rating'].astype(float)
-#df4['Rating'] = df4['Rating'].astype(float)
-
-#print('Dataset 2 shape: {}'.format(df2.shape))
-#print('Dataset 3 shape: {}'.format(df3.shape))
-#print('Dataset 4 shape: {}'.format(df4.shape))
-
-# load less data for speed
-
 df = df1
-#df = df1.append(df2)
-#df = df.append(df3)
-#df = df.append(df4)
 
 df.index = np.arange(0,len(df))
 print('Full dataset shape: {}'.format(df.shape))
@@ -45,13 +27,10 @@ print(df.iloc[::5000000, :])
 
 p = df.groupby('Rating')['Rating'].agg(['count'])
 
-# get movie count
 movie_count = df.isnull().sum()[1]
 
-# get customer count
 cust_count = df['Cust_Id'].nunique() - movie_count
 
-# get rating count
 rating_count = df['Cust_Id'].count() - movie_count
 
 ax = p.plot(kind = 'barh', legend = False, figsize = (15,10))
@@ -69,20 +48,16 @@ movie_np = []
 movie_id = 1
 
 for i,j in zip(df_nan['index'][1:],df_nan['index'][:-1]):
-    # numpy approach
     temp = np.full((1,i-j-1), movie_id)
     movie_np = np.append(movie_np, temp)
     movie_id += 1
 
-# Account for last record and corresponding length
-# numpy approach
 last_record = np.full((1,len(df) - df_nan.iloc[-1, 0] - 1),movie_id)
 movie_np = np.append(movie_np, last_record)
 
 print('Movie numpy: {}'.format(movie_np))
 print('Length: {}'.format(len(movie_np)))
 
-# remove those Movie ID rows
 df = df[pd.notnull(df['Rating'])]
 
 df['Movie_Id'] = movie_np.astype(int)
@@ -117,22 +92,10 @@ df_p = pd.pivot_table(df,values='Rating',index='Cust_Id',columns='Movie_Id')
 
 print(df_p.shape)
 
-# Below is another way I used to sparse the dataframe...doesn't seem to work better
-
-#Cust_Id_u = list(sorted(df['Cust_Id'].unique()))
-#Movie_Id_u = list(sorted(df['Movie_Id'].unique()))
-#data = df['Rating'].tolist()
-#row = df['Cust_Id'].astype('category', categories=Cust_Id_u).cat.codes
-#col = df['Movie_Id'].astype('category', categories=Movie_Id_u).cat.codes
-#sparse_matrix = csr_matrix((data, (row, col)), shape=(len(Cust_Id_u), len(Movie_Id_u)))
-#df_p = pd.DataFrame(sparse_matrix.todense(), index=Cust_Id_u, columns=Movie_Id_u)
-#df_p = df_p.replace(0, np.NaN)
-
 df_title = pd.read_csv('../input/movie_titles.csv', encoding = "ISO-8859-1", header = None, names = ['Movie_Id', 'Year', 'Name'])
 df_title.set_index('Movie_Id', inplace = True)
 print (df_title.head(10))reader = Reader()
 
-# get just top 100K rows for faster run time
 data = Dataset.load_from_df(df[['Cust_Id', 'Movie_Id', 'Rating']][:100000], reader)
 data.split(n_folds=3)
 
@@ -148,7 +111,6 @@ user_785314 = df_title.copy()
 user_785314 = user_785314.reset_index()
 user_785314 = user_785314[~user_785314['Movie_Id'].isin(drop_movie_list)]
 
-# getting full dataset
 data = Dataset.load_from_df(df[['Cust_Id', 'Movie_Id', 'Rating']], reader)
 
 trainset = data.build_full_trainset()
