@@ -1,4 +1,4 @@
-# ML-storage
+# ML-DL-CV-storage
 
 Disclaimer: This repository was made for a storage of my own personal projects. These scripts have been referenced and edited from existing scripts found across the web.
 
